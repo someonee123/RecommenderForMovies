@@ -1,0 +1,31 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtualna okruženja
+tutorial-env/
+venv/
+env/
+.env
+.env.*
+
+# Cache i modeli
+cachedir/
+model/
+*.h5
+*.pt
+*.pkl
+*.joblib
+
+# IDE/OS
+.vscode/
+.idea/
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+
+# Logovi i privremeno
+*.log
+tmp/
+*.tmp

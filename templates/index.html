@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sustav preporučivanja filmova</title>
+    <style>
+        :root {
+            --primary-color: rgb(3, 66, 85);
+            --secondary-color: rgb(247, 213, 213);
+            --background-light: rgb(240, 248, 250);
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--background-light);
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 40px;
+            font-weight: 600;
+            font-size: 2.2rem;
+            letter-spacing: -0.5px;
+        }
+        
+        .form-container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: var(--box-shadow);
+            border-top: 4px solid var(--primary-color);
+        }
+        
+        .algorithm-selector {
+            margin-bottom: 30px;
+            padding: 25px;
+            background-color: var(--secondary-color);
+            border-radius: 8px;
+        }
+        
+        .algorithm-selector h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 30px;
+            margin-top: 15px;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+        }
+        
+        .radio-option input {
+            margin-right: 10px;
+            accent-color: var(--primary-color);
+            transform: scale(1.2);
+        }
+        
+        .form-group {
+            margin-bottom: 30px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border 0.3s;
+            max-width: 200px;
+        }
+        
+        input[type="number"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(3, 66, 85, 0.1);
+        }
+        
+        button {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            letter-spacing: 0.5px;
+        }
+        
+        button:hover {
+            background-color: rgb(2, 50, 65);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .error {
+            color: #dc3545;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8d7da;
+            border-radius: 6px;
+            border-left: 4px solid #dc3545;
+        }
+        
+        @media (max-width: 600px) {
+            .radio-group {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .form-container {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Sustav preporučivanja filmova</h1>
+    <div class="form-container">
+        <form method="POST">
+            <div class="algorithm-selector">
+                <h3>Odaberite algoritam:</h3>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="algorithm" value="user_user" checked>
+                        User-User
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="algorithm" value="item_item">
+                        Item-Item
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="user_id">Unesite jedinstvenu oznaku korisnika:</label>
+                <input type="number" id="user_id" name="user_id" required min="1" placeholder="npr. 123">
+            </div>
+            
+            <button type="submit">
+                PRIKAŽI PREPORUKE →
+            </button>
+        </form>
+        
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+    </div>
+</body>
+</html>

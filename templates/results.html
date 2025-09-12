@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>5 najboljih preporuka</title>
+    <style>
+         :root {
+            --primary-color: rgb(3, 66, 85);
+            --secondary-color: rgb(247, 213, 213);
+            --background-light: rgb(240, 248, 250);
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        body {
+            font-family: 'Arial', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--background-light);
+        }
+        h1 {
+            color: #343a40;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600px;
+        }
+    
+        .recommendations-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap:20px;
+            justify-content: center;
+            margin:0 auto;
+            
+        }
+        .movie-card {
+            display: flex;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+            align-items: center;
+            height: 180px;
+            width: auto;
+            min-width: 250px;
+            box-sizing: border-box;
+        }
+    
+        .movie-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .movie-poster {
+            width: 100px;
+            height: 150px;
+        }
+        .movie-info {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .movie-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #212529;
+        }
+        .movie-rating {
+            color: #6c757d;
+            font-size: 0.9em;
+            
+        }
+        .movie-rating .stars {
+            margin-right: 5px;
+        }
+        .movie-id {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        button {
+            width: 45%;
+            padding: 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 45px;
+            margin-top: 20px;
+            letter-spacing: 0.5px;
+        }
+        
+        button:hover {
+            background-color: rgb(2, 50, 65);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .buttons{
+            margin-left: 45px;
+        }
+
+        a{
+            color: white;
+            text-decoration: none;
+        }
+       
+        .eval-result {
+            margin-top: 30px;
+            padding: 25px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: none;
+            border-left: 5px solid #17a2b8;
+        }
+        .eval-result h3 {
+            margin-top: 0;
+            color: #343a40;
+            font-weight: 600;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 10px;
+        }
+        .metrics-container {
+            display: flex;
+            gap: 30px;
+            margin: 20px 0;
+        }
+        .metric {
+            flex: 1;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        .metric-name {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+        .metric-value {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #212529;
+            font-family: 'Courier New', monospace;
+        }
+        @media (max-width: 768px) {
+            .recommendations-container{
+                grid-template-columns: 1fr;
+            }
+           
+        }
+    </style>
+</head>
+<body>
+    <h1>Preporuke za korisnika #{{ user_id }}</h1>
+    
+
+    <div class="recommendations-container">
+        {% for movie in recommendations %}
+        <div class="movie-card">
+            <img src="{{ movie.poster_url }}" class="movie-poster" alt="{{ movie.title }}">
+            <div class="movie-info">
+                <div class="movie-title">{{ movie.title }}</div>
+                {% if movie.predicted_rating %}
+                <div class="movie-rating">
+                    <span>Ocjena:</span>
+                    <span>{{ "%.1f"|format(movie.predicted_rating) }}</span>
+                </div>
+                {% endif %}
+                <span class="movie-id">Oznaka filma: {{ movie.movieId }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="buttons">
+        <button><a href="/">← Povratak na početnu</a></button>
+        <button class="eval-btn" onclick="runEvaluation()">Ocijeni točnost modela</button>
+    </div>
+
+    <div id="evalResult" class="eval-result">
+        <h3>Rezultati evaluacije modela</h3>
+        <div class="metrics-container">
+            <div class="metric">
+                <div class="metric-name">RMSE (Root Mean Square Error)</div>
+                <div id="rmseValue" class="metric-value">-</div>
+            </div>
+            <div class="metric">
+                <div class="metric-name">MAE (Mean Absolute Error)</div>
+                <div id="maeValue" class="metric-value">-</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function runEvaluation() {
+            const evalResult = document.getElementById('evalResult');
+            const evalBtn = document.querySelector('.eval-btn');
+            
+            evalBtn.disabled = true;
+            evalBtn.textContent = 'Evaluacija u tijeku...';
+            evalResult.style.display = 'none';
+            
+            fetch('/evaluate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `algorithm=${encodeURIComponent('{{ algorithm }}')}`
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('rmseValue').textContent = data.rmse.toFixed(4);
+                document.getElementById('maeValue').textContent = data.mae.toFixed(4);
+                evalResult.style.display = 'block';
+                evalBtn.style.display = 'none';
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                evalResult.innerHTML = '<h3>Greška pri evaluaciji</h3><p>Došlo je do pogreške prilikom evaluacije modela. Pokušajte ponovno.</p>';
+                evalResult.style.display = 'block';
+            });
+        }
+    </script>
+</body>
+</html>
