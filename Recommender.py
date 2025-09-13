@@ -196,7 +196,7 @@ def evaluate_user_user():
         ratings['userId'].isin(user_counts[user_counts >= 20].index)
     ]
 
-    model_train, model_test = train_test_split(
+    model_train, model_test = train_test_split( #Dodajem samo komentare u Python kod.
         filtered_ratings, test_size=0.30, random_state=42)
 
     test_user_features = model_test.pivot(
